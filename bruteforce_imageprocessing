@@ -1,0 +1,53 @@
+import subprocess
+
+print("Hello, I would like to help you generate all optionals image range  according to valid parameters ")
+
+
+    def blur():
+        iteration = 1
+        blurOption=[]
+        kerneSizeList = [33, 55]
+        for element in kerneSizeList:
+            for iteration in range(1, 60):
+                blurOption.append([element, iteration])
+        return (blurOption)
+
+    def diff():
+        diffOption=[]
+        diffTypeList = ['ABS_DIFF', 'PRIORITY_DIFF']
+        diffInColorSpaceList = ['HSV', 'RGB', 'LAB']
+        for elementA in diffTypeList:
+            for elementB in diffInColorSpaceList:
+                diffOption.append([elementA, elementB])
+        return (diffOption)
+
+
+    blurOptions = blur()
+    diffOptions = diff()
+
+
+    imageName = 1
+    for b in range(len(blurOptions)):
+        secondaryBlurFirst = blurOptions[b][0]
+        secondaryBlurSecond = blurOptions[b][1]
+        for d in range(len(diffOptions)):
+            secondaryDiffFirst = (diffOptions[d][0])
+            secondaryDiffSecond = (diffOptions[d][1])
+
+            fin = open("blurDiff.xml", "rt")
+            lines = fin.read()
+            fout = open("newBlurDiff.xml", "wt")
+
+            checkWords = ("KERNELSIZE", "ITERATIONS", "DIFFTYPE", "DIFFINCOLOR", "IMAGENAME")
+            # repWords = (secondaryBlurFirst, secondaryBlurSecond, secondaryDiffFirst, secondaryDiffSecond, imageName)
+            repWords = (secondaryBlurFirst, secondaryBlurSecond, secondaryDiffFirst, secondaryDiffSecond, 'Blur_kernel{blur1}_iter{blur2}Diff_type{diff1}_color{diff2}'.format(blur1=secondaryBlurFirst, blur2=secondaryBlurSecond, diff1=secondaryDiffFirst, diff2=secondaryDiffSecond))
+
+            for check, rep in zip(checkWords, repWords):
+                lines = lines.replace(check, str(rep))
+
+            fout.write(lines)
+            fout.close()
+
+            cmd = r'D:\pip\bin\pip\x64\Release\pip.exe  C:\Developer\projects\bruteForce\newBlurDiff.xml'
+            subprocess.call(cmd, shell=True)
+            imageName = imageName+1
